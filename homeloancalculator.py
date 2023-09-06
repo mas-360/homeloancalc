@@ -8,7 +8,6 @@ Created on Tue Sep  5 08:26:00 2023
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import altair as alt
 import calendar
 
