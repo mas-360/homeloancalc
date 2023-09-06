@@ -56,9 +56,7 @@ st.write(f"Total Payment (including extra): R{total_payment:.2f}")
 
 
 # Create an amortization table
-amortization_df = pd.DataFrame(
-    columns=["Month", "Payment", "Principal", "Interest", "Balance"]
-)
+amortization_df = pd.DataFrame(columns=["Month", "Payment", "Principal", "Interest", "Balance"])
 
 balance = loan_amount
 total_interest_paid = 0  # Initialize total interest paid
@@ -69,13 +67,14 @@ for month in range(selected_start_month + 1, num_payments + 1):
     balance -= principal_payment
     total_interest_paid += interest_payment  # Accumulate interest payments
 
+    # Append the data to the DataFrame
     amortization_df = amortization_df.append(
         {
             "Month": f"{calendar.month_name[month % 12]} {selected_start_year + month // 12}",
-            "Payment": f"R{total_payment:.2f}",
-            "Principal": f"R{principal_payment:.2f}",
-            "Interest": f"R{interest_payment:.2f}",
-            "Balance": f"R{balance:.2f}",
+            "Payment": f"${total_payment:.2f}",
+            "Principal": f"${principal_payment:.2f}",
+            "Interest": f"${interest_payment:.2f}",
+            "Balance": f"${balance:.2f}",
         },
         ignore_index=True,
     )
