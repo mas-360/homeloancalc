@@ -71,10 +71,10 @@ for month in range(selected_start_month + 1, num_payments + 1):
     amortization_df = amortization_df.append(
         {
             "Month": f"{calendar.month_name[month % 12]} {selected_start_year + month // 12}",
-            "Payment": f"${total_payment:.2f}",
-            "Principal": f"${principal_payment:.2f}",
-            "Interest": f"${interest_payment:.2f}",
-            "Balance": f"${balance:.2f}",
+            "Payment": f"R{total_payment:.2f}",
+            "Principal": f"R{principal_payment:.2f}",
+            "Interest": f"R{interest_payment:.2f}",
+            "Balance": f"R{balance:.2f}",
         },
         ignore_index=True,
     )
