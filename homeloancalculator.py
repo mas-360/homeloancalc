@@ -95,8 +95,6 @@ with col3:
 st.markdown('</div>', unsafe_allow_html=True)
 
 
-
-
 # Create an empty DataFrame with column names
 amortization_df = pd.DataFrame(columns=["Month", "Payment", "Principal", "Interest", "Balance"])
 
@@ -229,7 +227,7 @@ for index, row in selected_month_df.iterrows():
         "Principal": f"R{principal_payment:,.2f}",
         "Interest": f"R{interest_payment:,.2f}",
     }
-    new_amortization_df = new_amortization_df.append(new_row_data, ignore_index=True)
+new_amortization_df = new_amortization_df.append(new_row_data, ignore_index=True)
 
 # Extract the last entry to compare balances over the total loan period
 last_original_balance = float(selected_month_df["Balance"].iloc[-1].strip("R").replace(",", ""))
