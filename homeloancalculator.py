@@ -83,11 +83,11 @@ for month in range(1, num_payments + 1):
 # Create a DataFrame from the list of row data
 amortization_df = pd.DataFrame(row_data_list)
 
-    # Update the selected month and year
-    selected_start_month += 1
-    if selected_start_month > 12:
-        selected_start_month = 1
-        selected_start_year += 1
+# Update the selected month and year
+selected_start_month += 1
+if selected_start_month > 12:
+    selected_start_month = 1
+    selected_start_year += 1
 
 selected_month = list(amortization_df["Month"])
 
