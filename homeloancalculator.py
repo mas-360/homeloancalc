@@ -152,7 +152,7 @@ st.markdown("##")
 # Create a DataFrame for comparing new and original balance over the total loan period
 selected_month_df = amortization_df.copy()
 new_balance = new_loan_amount
-new_amortization_df = pd.DataFrame(columns=["Month", "Balance", "Principal", "Interest"])
+new_amortization_data = []
 
 # Initialize variables to calculate total amounts
 original_principal_total = 0
@@ -174,14 +174,16 @@ for index, row in selected_month_df.iterrows():
     original_interest_total += float(row["Interest"].strip("R").replace(",", ""))
     modified_interest_total += interest_payment
 
-    # Append the data to the new DataFrame with thousand separators
-    new_row_data = {
+    # Append the data to the new_amortization_data list
+    new_amortization_data.append({
         "Month": row["Month"],
         "Balance": f"R{new_balance:,.2f}",
         "Principal": f"R{principal_payment:,.2f}",
         "Interest": f"R{interest_payment:,.2f}",
-    }
-    new_amortization_df = new_amortization_df.append(new_row_data, ignore_index=True)
+    })
+
+# Create a DataFrame from the new_amortization_data list
+new_amortization_df = pd.DataFrame(new_amortization_data)
 
 # Extract the last entry to compare balances over the total loan period
 last_original_balance = float(selected_month_df["Balance"].iloc[-1].strip("R").replace(",", ""))
