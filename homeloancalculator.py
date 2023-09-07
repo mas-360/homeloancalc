@@ -11,6 +11,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import calendar
 
+st.set_page_config(page_title="Home Loan Calculator",
+                   layout="wide"
+)
+
 
 st.title(":house: Home Loan Calculator ")
 st.write("A tool that helps you estimate your monthly loan payments and the total interest you will pay over the life of the loan. ")
@@ -35,19 +39,63 @@ selected_start_month, selected_start_year_with_parentheses = start_month.split()
 selected_start_month = list(calendar.month_name).index(selected_start_month)
 selected_start_year = int(selected_start_year_with_parentheses.strip("()"))
 
-# Calculate monthly payment and create amortization table
+# Calculate monthly payment
 monthly_interest_rate = interest_rate / 12 / 100
 num_payments = loan_term * 12
-monthly_payment = (
-    loan_amount
-    * monthly_interest_rate
-    * (1 + monthly_interest_rate) ** num_payments
-) / ((1 + monthly_interest_rate) ** num_payments - 1)
+monthly_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments) / ((1 + monthly_interest_rate) ** num_payments - 1)
+
+# Calculate amortization schedule
+amortization_schedule = []
+
+remaining_principal = loan_amount
+for month in range(1, num_payments + 1):
+    interest_payment = remaining_principal * monthly_interest_rate
+    principal_payment = monthly_payment - interest_payment
+    remaining_principal -= principal_payment
+    amortization_schedule.append([month, monthly_payment, principal_payment, interest_payment, remaining_principal])
+
+# Create a DataFrame for the amortization schedule
+amortization_df = pd.DataFrame(amortization_schedule, columns=['Month', 'Monthly Payment', 'Principal Payment', 'Interest Payment', 'Remaining Principal'])
+
+# Calculate payoff date based on the last date in the amortization table
+last_month = amortization_df.iloc[-1]['Month']
+payoff_date = pd.to_datetime(f"{selected_start_year}-{selected_start_month}-01") + pd.DateOffset(months=last_month)
+
 
 st.subheader("Loan Details")
-st.write(f"Monthly Payment: R{monthly_payment:,.2f}")
+# Create a summary box
+st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
 
-#st.write(f"Total Interest Paid: R{total_interest_paid:.2f}")
+
+# Place the columns within the container
+col1, col2, col3 = st.columns(3)
+
+# Monthly payment
+with col1:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Monthly payment</p>
+        <span style="font-size: 20px; color: #000;">R{monthly_payment:,.2f}</span>
+    """, unsafe_allow_html=True)
+
+# Total interest paid
+with col2:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Total interest paid</p>
+        <span style="font-size: 20px; color: #000;">R{amortization_df['Interest Payment'].sum():,.2f}</span>
+    """, unsafe_allow_html=True)
+
+# Payoff date
+with col3:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payoff date</p>
+        <span style="font-size: 20px; color: #000;">{payoff_date.strftime('%b %Y')}</span>
+    """, unsafe_allow_html=True)
+
+# Close the summary box
+st.markdown('</div>', unsafe_allow_html=True)
+
+
+
 
 # Create an empty DataFrame with column names
 amortization_df = pd.DataFrame(columns=["Month", "Payment", "Principal", "Interest", "Balance"])
@@ -152,7 +200,7 @@ st.markdown("##")
 # Create a DataFrame for comparing new and original balance over the total loan period
 selected_month_df = amortization_df.copy()
 new_balance = new_loan_amount
-new_amortization_data = []
+new_amortization_df = pd.DataFrame(columns=["Month", "Balance", "Principal", "Interest"])
 
 # Initialize variables to calculate total amounts
 original_principal_total = 0
@@ -174,16 +222,14 @@ for index, row in selected_month_df.iterrows():
     original_interest_total += float(row["Interest"].strip("R").replace(",", ""))
     modified_interest_total += interest_payment
 
-    # Append the data to the new_amortization_data list
-    new_amortization_data.append({
+    # Append the data to the new DataFrame with thousand separators
+    new_row_data = {
         "Month": row["Month"],
         "Balance": f"R{new_balance:,.2f}",
         "Principal": f"R{principal_payment:,.2f}",
         "Interest": f"R{interest_payment:,.2f}",
-    })
-
-# Create a DataFrame from the new_amortization_data list
-new_amortization_df = pd.DataFrame(new_amortization_data)
+    }
+    new_amortization_df = new_amortization_df.append(new_row_data, ignore_index=True)
 
 # Extract the last entry to compare balances over the total loan period
 last_original_balance = float(selected_month_df["Balance"].iloc[-1].strip("R").replace(",", ""))
