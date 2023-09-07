@@ -55,13 +55,16 @@ amortization_df = pd.DataFrame(columns=["Month", "Payment", "Principal", "Intere
 balance = loan_amount
 total_interest_paid = 0  # Initialize total interest paid
 
+# Initialize an empty list to store row data
+row_data_list = []
+
 for month in range(1, num_payments + 1):
     interest_payment = balance * monthly_interest_rate
     principal_payment = monthly_payment - interest_payment
     balance -= principal_payment
     total_interest_paid += interest_payment  # Accumulate interest payments
 
-    # Append the data to the DataFrame with thousand separators
+    # Append the data to the list with thousand separators
     row_data = {
         "Month": f"{calendar.month_name[selected_start_month]} {selected_start_year}",
         "Payment": f"R{monthly_payment:,.2f}",
@@ -69,7 +72,16 @@ for month in range(1, num_payments + 1):
         "Interest": f"R{interest_payment:,.2f}",
         "Balance": f"R{balance:,.2f}",
     }
-    amortization_df = amortization_df.append(row_data, ignore_index=True)
+    row_data_list.append(row_data)
+
+    # Update the selected month and year
+    selected_start_month += 1
+    if selected_start_month > 12:
+        selected_start_month = 1
+        selected_start_year += 1
+
+# Create a DataFrame from the list of row data
+amortization_df = pd.DataFrame(row_data_list)
 
     # Update the selected month and year
     selected_start_month += 1
