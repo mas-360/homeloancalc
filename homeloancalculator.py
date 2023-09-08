@@ -2,7 +2,7 @@
 """
 Created on Tue Sep  5 08:26:00 2023
 
-@author: 27823
+@author: anthea
 """
 
 import streamlit as st
@@ -18,7 +18,7 @@ st.set_page_config(page_title="Home Loan Calculator",
 
 st.title(":house: Home Loan Calculator ")
 st.write("A tool that helps you estimate your monthly loan payments and the total interest you will pay over the life of the loan. ")
-st.sidebar.subheader("User Input")
+st.sidebar.subheader("Input your loan details below:")
 
 # Input fields for loan details
 loan_amount = st.sidebar.number_input("Loan Amount (R)", value=100000, step=1000)
@@ -62,7 +62,7 @@ last_month = amortization_df.iloc[-1]['Month']
 payoff_date = pd.to_datetime(f"{selected_start_year}-{selected_start_month}-01") + pd.DateOffset(months=last_month)
 
 
-st.subheader("Loan Details")
+st.subheader("Loan Summary:")
 # Create a summary box
 st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
 
@@ -145,12 +145,12 @@ st.markdown("---")
 
 # Create a function to calculate the new total payment
 def calculate_new_total_payment(
-    new_loan_amount, new_interest_rate, new_loan_term, new_extra_payment
+    loan_amount, new_interest_rate, new_loan_term, new_extra_payment
 ):
     new_monthly_interest_rate = new_interest_rate / 12 / 100
-    new_num_payments = new_loan_term * 12
+    new_num_payments = loan_term * 12
     new_monthly_payment = (
-        new_loan_amount
+        loan_amount
         * new_monthly_interest_rate
         * (1 + new_monthly_interest_rate) ** new_num_payments
     ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
@@ -162,7 +162,7 @@ def calculate_new_total_payment(
 
 # Allow users to change variables and see the impact
 st.sidebar.subheader("Change Variables")
-new_loan_amount = st.sidebar.number_input("New Loan Amount (R)", value=loan_amount, step=1000)
+#new_loan_amount = st.sidebar.number_input("New Loan Amount (R)", value=loan_amount, step=1000)
 new_interest_rate = st.sidebar.number_input("New Interest Rate (%)", value=interest_rate, step=0.1)
 new_loan_term = st.sidebar.number_input("New Loan Term (Years)", value=loan_term, step=1)
 new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", value=0, step=10)
@@ -170,110 +170,99 @@ new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", val
 # Initialize new_total_payment with the original payment
 new_total_payment = monthly_payment
 new_monthly_payment = monthly_payment
-new_monthly_interest_rate = interest_rate
+new_monthly_payment_with_interest_rate = monthly_payment  # Initialize the second monthly payment
 
 # Calculate the impact of changes when the "Calculate" button is clicked
 if st.sidebar.button("Calculate"):
     new_monthly_interest_rate = new_interest_rate / 12 / 100
     new_num_payments = new_loan_term * 12
-    new_monthly_payment = (
-        new_loan_amount
-        * new_monthly_interest_rate
-        * (1 + new_monthly_interest_rate) ** new_num_payments
-    ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
+
     if new_extra_payment > 0:
+        new_monthly_payment = (
+            loan_amount
+            * new_monthly_interest_rate
+            * (1 + new_monthly_interest_rate) ** new_num_payments
+        ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
         new_total_payment = new_monthly_payment + new_extra_payment
-    else:
-        new_total_payment = new_monthly_payment
+
+    if new_monthly_interest_rate != interest_rate / 12 / 100:
+        new_monthly_payment_with_interest_rate = (
+            loan_amount
+            * new_monthly_interest_rate
+            * (1 + new_monthly_interest_rate) ** new_num_payments
+        ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
+
+    # Calculate the payment difference
+    payment_difference = monthly_payment - new_total_payment
+
+    # Calculate the loan term difference
+    original_num_payments = loan_term * 12
+    new_loan_term_difference = new_num_payments - original_num_payments
+else:
+    # If the "Calculate" button has not been clicked, set the payment and loan term differences to 0
+    payment_difference = 0
+    new_loan_term_difference = 0
 
 st.subheader("Impact of Changes")
-st.write(f"Monthly Payment: R{monthly_payment:,.2f}")
-st.write(f"New Monthly Payment: R{new_total_payment:,.2f}")
-# Calculate and display the savings or additional cost
-payment_difference = monthly_payment - new_total_payment
-st.write(
-    f"Difference: R{payment_difference:,.2f} {'additional cost' if payment_difference < 0 else 'savings'}"
-)
-st.markdown("##")
-
-# Create a DataFrame for comparing new and original balance over the total loan period
-selected_month_df = amortization_df.copy()
-new_balance = new_loan_amount
-new_amortization_data = []
-
-# Initialize variables to calculate total amounts
-original_principal_total = 0
-modified_principal_total = 0
-
-original_interest_total = 0
-modified_interest_total = 0
-
-for index, row in selected_month_df.iterrows():
-    # Calculate new balance based on new payments
-    interest_payment = new_balance * new_monthly_interest_rate
-    principal_payment = new_monthly_payment - interest_payment
-    new_balance -= principal_payment
-
-    # Update total amounts
-    original_principal_total += float(row["Principal"].strip("R").replace(",", ""))
-    modified_principal_total += principal_payment
-
-    original_interest_total += float(row["Interest"].strip("R").replace(",", ""))
-    modified_interest_total += interest_payment
-
-    # Append the data to the new_amortization_data list
-    new_amortization_data.append({
-        "Month": row["Month"],
-        "Balance": f"R{new_balance:,.2f}",
-        "Principal": f"R{principal_payment:,.2f}",
-        "Interest": f"R{interest_payment:,.2f}",
-    })
-
-# Create a DataFrame from the new_amortization_data list
-new_amortization_df = pd.DataFrame(new_amortization_data)
+#st.write(f"Monthly Payment: R{monthly_payment:,.2f}")
+#st.write(f"New Monthly Payment: R{new_monthly_payment:,.2f}")
+#st.write(f"New Monthly Payment (with Interest Rate Change): R{new_monthly_payment_with_interest_rate:,.2f}")
+#st.write(
+    #f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}"
+#)
 
 
-# Extract the last entry to compare balances over the total loan period
-last_original_balance = float(selected_month_df["Balance"].iloc[-1].strip("R").replace(",", ""))
-last_new_balance = float(new_amortization_df["Balance"].iloc[-1].strip("R").replace(",", ""))
 
-# Calculate the original and modified loan amount breakdown
-original_balance_breakdown = [original_principal_total, original_interest_total]
-modified_balance_breakdown = [modified_principal_total, modified_interest_total]
+def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference): #new_loan_term):
+    explanations = []
 
-principal_total = [original_principal_total, modified_principal_total]
-interest_total = [original_interest_total, modified_interest_total ]
-
-if st.checkbox("Show Total Loan Payment Comparison"): 
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=principal_total,
-                         y=["Original", "Modified"],
-                         orientation='h',
-                         name='Principal',
-                         text=[f"R{val:,.2f}" for val in principal_total],
-                         textposition='inside',
-                         marker=dict(
-                         color='#c6c5b9',
-                         line=dict(color='#022B3A', width=3)
-        )))
-    fig.add_trace(go.Bar(x=interest_total,
-                         y=["Original", "Modified"],
-                         orientation='h',
-                         name='Interest',
-                         text=[f"R{val:,.2f}" for val in interest_total],
-                         textposition='inside',
-                         marker=dict(
-                         color='#BFDBF7',
-                         line=dict(color='#022B3A', width=3)
+    # Explain the impact of adding extra payment
+    if new_extra_payment > 0:
+        explanations.append(
+           
+            f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
+            f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
+            "When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
         )
-    ))
-    
-    fig.update_layout(barmode='stack', xaxis_title='Amount (R)')
-    st.plotly_chart(fig, theme="streamlit")
-    
+
+    # Explain the impact of a lower interest rate
+    if new_interest_rate < 0:
+        explanations.append(
+
+            "When you secure a loan with a lower interest rate than the original loan, it has a positive impact. A lower interest rate means you'll pay less in interest over the life of the loan, resulting in lower overall costs."
+        )
+
+    # Explain the impact of a shorter loan term 
+
+    #if new_loan_term < 0:
+        #explanations.append(
+            #"Shorter Loan Term than Original:\n"
+            #"Relationship: Positive\n"
+            #"Having a shorter loan term compared to the original loan is also a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
+        #)
+        
+    if new_loan_term_difference != 0:
+        st.write(
+            f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
+            "Having a shorter loan term compared to the original loan is a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
+        )
+
+    # Check if no changes were made
+    if not explanations:
+        explanations.append(
+            "No changes in the loan variables were made.\n"
+            "The original loan terms remain unchanged."
+        )
+
+    return "\n\n".join(explanations)
+
+
+explanation = explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference) #new_loan_term)
+st.write(explanation)
+
 st.markdown("---") 
 with st.expander(
     "**Disclaimer:**", expanded=True
 ):
-    st.write(""" Please note that by default this calculator uses the prime interest rate for bond payment calculations. This is purely for convenience and not an indication of the interest rate that might be offered to you by a bank. This calculator is intended to provide estimates based on the indicated amounts and rates. Whilst we make every effort to ensure the accuracy of these calculations, we cannot be held liable for inaccuracies. **masinsight** does not accept liability for any damages arising from the use of this calculator.
+    st.write(""" Please note that by default this calculator uses the prime interest rate for bond payment calculations. This is purely for convenience and not an indication of the interest rate that might be offered to you by a bank. This calculator is intended to provide estimates based on the indicated amounts and rates. Whilst we make every effort to ensure the accuracy of these calculations, we cannot be held liable for inaccuracies and do not accept liability for any damages arising from the use of this calculator.
              """)   
