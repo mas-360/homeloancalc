@@ -225,7 +225,7 @@ original_monthly_payment = (
 
 # Create a container with curved border in grey
 st.markdown("""
-    <div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True
+    <div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">
 """, unsafe_allow_html=True)
 
 # Display original and new payment details
