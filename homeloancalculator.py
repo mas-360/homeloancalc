@@ -4,19 +4,34 @@ Created on Tue Sep  5 08:26:00 2023
 
 @author: anthea
 """
-
+import requests
 import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+from streamlit_lottie import st_lottie
 import calendar
 
 st.set_page_config(page_title="Home Loan Calculator",
+                   page_icon=":house:",
                    layout="wide"
 )
 
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
-st.title(":house: Home Loan Calculator ")
+lottie_coding = load_lottieurl("https://lottie.host/7ae44262-17df-4ce9-a3d0-f0d7b7941dee/GkrOD8l8vl.json")
+
+with st.container():
+  left_column, right_column = st.columns(2)
+  with left_column:
+    st_lottie(lottie_coding,key="coding")
+  with right_column:
+    st.title("Home Loan Calculator")
+st.write("---")    
 st.write("A tool that helps you estimate your monthly loan payments and the total interest you will pay over the life of the loan. ")
 st.sidebar.subheader("Input your loan details below:")
 
