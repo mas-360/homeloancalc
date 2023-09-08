@@ -223,43 +223,37 @@ original_monthly_payment = (
     * (1 + original_monthly_interest_rate) ** original_num_payments
 ) / ((1 + original_monthly_interest_rate) ** original_num_payments - 1)
 
-# Create a container with curved border in grey
-st.markdown("""
-    <div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">
-""", unsafe_allow_html=True)
-
-# Display original and new payment details
-col1, col2 = st.columns(2)
-
-# Original payment details
-with col1:
-    st.subheader("Original Payment Details")
-    st.write(f"Original Monthly Payment: R{original_monthly_payment:.2f}")
-    st.write(f"Original Total Payment: R{monthly_payment:.2f}")
-    st.write(f"Original Loan Term: {loan_term} years")
-
-# New payment details
-with col2:
-    st.subheader("Updated Payment Details")
-    st.write(f"New Monthly Payment: R{new_monthly_payment:.2f}")
-    st.write(f"New Total Payment: R{new_total_payment:.2f}")
-    st.write(f"New Loan Term: {new_loan_term} years")
-
-# Display payment and loan term differences
-st.write(f"Payment Difference: R{payment_difference:.2f}")
-st.write(f"Loan Term Difference: {new_loan_term_difference} months")
-
-# Close the container
-st.markdown('</div>', unsafe_allow_html=True)
 st.subheader("Impact of Changes")
-#st.write(f"Monthly Payment: R{monthly_payment:,.2f}")
-#st.write(f"New Monthly Payment: R{new_monthly_payment:,.2f}")
-#st.write(f"New Monthly Payment (with Interest Rate Change): R{new_monthly_payment_with_interest_rate:,.2f}")
-#st.write(
-    #f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}"
-#)
 
+# Create a summary box
+st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
 
+# Place the columns within the container
+col1, col2, col3 = st.columns(4)
+
+# New Monthly Payment
+with col1:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Monthly payment</p>
+        <span style="font-size: 20px; color: #000;">R{new_monthly_payment:.2f}</span>
+    """, unsafe_allow_html=True)
+  
+# Payment Difference
+with col2:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Total interest paid</p>
+        <span style="font-size: 20px; color: #000;">R{payment_difference:.2f}</span>
+    """, unsafe_allow_html=True)
+
+# New Payoff date
+with col3:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payoff date</p>
+        <span style="font-size: 20px; color: #000;">{new_loan_term} years</span>
+    """, unsafe_allow_html=True)
+
+# Close the summary box
+st.markdown('</div>', unsafe_allow_html=True)
 
 def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference): #new_loan_term):
     explanations = []
