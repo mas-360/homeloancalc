@@ -225,14 +225,7 @@ original_monthly_payment = (
 
 # Create a container with curved border in grey
 st.markdown("""
-    <div style="border-radius: 10px; padding: 16px; background-color: #ffffff;">
-""", unsafe_allow_html=True)
-
-# Header
-st.markdown("""
-    <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px;">
-        <span style="font-size: 16px; font-weight: bold;">SUMMARY</span>
-    </div>
+    <div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True
 """, unsafe_allow_html=True)
 
 # Display original and new payment details
