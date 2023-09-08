@@ -82,15 +82,15 @@ st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white 
 
 
 # Place the columns within the container
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
-# Monthly payment
+# Loan Amount
 with col1:
     st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Monthly payment</p>
-        <span style="font-size: 20px; color: #000;">R{monthly_payment:,.2f}</span>
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Amount</p>
+        <span style="font-size: 20px; color: #000;">R{loan_amount:,.2f}</span>
     """, unsafe_allow_html=True)
-
+  
 # Total interest paid
 with col2:
     st.markdown(f"""
@@ -98,8 +98,15 @@ with col2:
         <span style="font-size: 20px; color: #000;">R{amortization_df['Interest Payment'].sum():,.2f}</span>
     """, unsafe_allow_html=True)
 
-# Payoff date
+# Monthly Payment
 with col3:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Monthly payment</p>
+        <span style="font-size: 20px; color: #000;">R{monthly_payment:,.2f}</span>
+    """, unsafe_allow_html=True)
+
+# Payoff date
+with col4:
     st.markdown(f"""
         <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payoff date</p>
         <span style="font-size: 20px; color: #000;">{payoff_date.strftime('%b %Y')}</span>
@@ -174,17 +181,14 @@ def calculate_new_total_payment(
     else:
         return new_monthly_payment
 
-# Allow users to change variables and see the impact
-st.sidebar.subheader("Change Variables")
-#new_loan_amount = st.sidebar.number_input("New Loan Amount (R)", value=loan_amount, step=1000)
+# Sidebar inputs
+st.sidebar.header('Change Variables')
 new_interest_rate = st.sidebar.number_input("New Interest Rate (%)", value=interest_rate, step=0.1)
 new_loan_term = st.sidebar.number_input("New Loan Term (Years)", value=loan_term, step=1)
 new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", value=0, step=10)
 
 # Initialize new_total_payment with the original payment
 new_total_payment = monthly_payment
-new_monthly_payment = monthly_payment
-new_monthly_payment_with_interest_rate = monthly_payment  # Initialize the second monthly payment
 
 # Calculate the impact of changes when the "Calculate" button is clicked
 if st.sidebar.button("Calculate"):
@@ -199,13 +203,6 @@ if st.sidebar.button("Calculate"):
         ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
         new_total_payment = new_monthly_payment + new_extra_payment
 
-    if new_monthly_interest_rate != interest_rate / 12 / 100:
-        new_monthly_payment_with_interest_rate = (
-            loan_amount
-            * new_monthly_interest_rate
-            * (1 + new_monthly_interest_rate) ** new_num_payments
-        ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
-
     # Calculate the payment difference
     payment_difference = monthly_payment - new_total_payment
 
@@ -216,6 +213,15 @@ else:
     # If the "Calculate" button has not been clicked, set the payment and loan term differences to 0
     payment_difference = 0
     new_loan_term_difference = 0
+
+# Calculate monthly payment for the original loan
+original_monthly_interest_rate = interest_rate / 12 / 100
+original_num_payments = loan_term * 12
+original_monthly_payment = (
+    loan_amount
+    * original_monthly_interest_rate
+    * (1 + original_monthly_interest_rate) ** original_num_payments
+) / ((1 + original_monthly_interest_rate) ** original_num_payments - 1)
 
 st.subheader("Impact of Changes")
 #st.write(f"Monthly Payment: R{monthly_payment:,.2f}")
