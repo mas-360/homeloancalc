@@ -263,7 +263,7 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
         explanations.append(
            
             #f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
-            f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
+            #f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
             "When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
         )
 
