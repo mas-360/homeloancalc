@@ -190,6 +190,9 @@ new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", val
 # Initialize new_total_payment with the original payment
 new_total_payment = monthly_payment
 
+# Create an empty container to hold the summary box
+summary_container = st.empty()
+
 # Calculate the impact of changes when the "Calculate" button is clicked
 if st.sidebar.button("Calculate"):
     new_monthly_interest_rate = new_interest_rate / 12 / 100
@@ -209,87 +212,54 @@ if st.sidebar.button("Calculate"):
     # Calculate the loan term difference
     original_num_payments = loan_term * 12
     new_loan_term_difference = new_num_payments - original_num_payments
-else:
-    # If the "Calculate" button has not been clicked, set the payment and loan term differences to 0
-    payment_difference = 0
-    new_loan_term_difference = 0
 
-# Calculate monthly payment for the original loan
-original_monthly_interest_rate = interest_rate / 12 / 100
-original_num_payments = loan_term * 12
-original_monthly_payment = (
-    loan_amount
-    * original_monthly_interest_rate
-    * (1 + original_monthly_interest_rate) ** original_num_payments
-) / ((1 + original_monthly_interest_rate) ** original_num_payments - 1)
+    # Create the summary box
+    summary_container.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
 
-st.subheader("Impact of Changes")
+    # Place the columns within the container
+    col1, col2, col3 = st.columns(3)
 
-# Create a summary box
-st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
+    # New Monthly Payment
+    with col1:
+        st.markdown(f"""
+            <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">New Monthly payment</p>
+            <span style="font-size: 20px; color: #000;">R{new_total_payment:.2f}</span>
+        """, unsafe_allow_html=True)
+      
+    # Payment Difference
+    with col2:
+        st.markdown(f"""
+            <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payment Difference</p>
+            <span style="font-size: 20px; color: #000;">R{payment_difference:.2f}</span>
+        """, unsafe_allow_html=True)
 
-# Place the columns within the container
-col1, col2, col3 = st.columns(3)
+    # New Payoff date
+    with col3:
+        st.markdown(f"""
+            <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Term Difference</p>
+            <span style="font-size: 20px; color: #000;">{abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}</span>
+        """, unsafe_allow_html=True)
 
-# New Monthly Payment
-with col1:
-    st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">New Monthly payment</p>
-        <span style="font-size: 20px; color: #000;">R{new_total_payment:.2f}</span>
-    """, unsafe_allow_html=True)
-  
-# Payment Difference
-with col2:
-    st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payment Difference</p>
-        <span style="font-size: 20px; color: #000;">R{payment_difference:.2f}</span>
-    """, unsafe_allow_html=True)
+    # Close the summary box
+    summary_container.markdown('</div>', unsafe_allow_html=True)
 
-# New Payoff date
-with col3:
-    st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Term Difference</p>
-        <span style="font-size: 20px; color: #000;">{abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}</span>
-    """, unsafe_allow_html=True)
-
-# Close the summary box
-st.markdown('</div>', unsafe_allow_html=True)
-
-def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference): #new_loan_term):
+# Function to explain loan changes
+def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference):
     explanations = []
 
-    # Explain the impact of adding extra payment
     if new_extra_payment > 0:
         explanations.append(
-           
-            #f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
-            #f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
+            f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
+            f"Payment Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
             "When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
         )
 
-    # Explain the impact of a lower interest rate
-    if new_interest_rate < 0:
-        explanations.append(
-
-            "When you secure a loan with a lower interest rate than the original loan, it has a positive impact. A lower interest rate means you'll pay less in interest over the life of the loan, resulting in lower overall costs."
-        )
-
-    # Explain the impact of a shorter loan term 
-
-    #if new_loan_term < 0:
-        #explanations.append(
-            #"Shorter Loan Term than Original:\n"
-            #"Relationship: Positive\n"
-            #"Having a shorter loan term compared to the original loan is also a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
-        #)
-        
     if new_loan_term_difference != 0:
-        st.write(
-            #f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
+        explanations.append(
+            f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
             "Having a shorter loan term compared to the original loan is a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
         )
 
-    # Check if no changes were made
     if not explanations:
         explanations.append(
             "No changes in the loan variables were made.\n"
@@ -298,10 +268,8 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
 
     return "\n\n".join(explanations)
 
-
-explanation = explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference) #new_loan_term)
+explanation = explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference)
 st.write(explanation)
-
 st.markdown("---") 
 with st.expander(
     "**Disclaimer:**", expanded=True
