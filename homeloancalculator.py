@@ -245,7 +245,7 @@ if st.sidebar.button("Calculate"):
 
     # Close the summary box
     summary_container.markdown('</div>', unsafe_allow_html=True)
-
+st.header("Impact of Changes")
 # Function to explain loan changes
 def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference):
     explanations = []
