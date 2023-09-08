@@ -30,8 +30,7 @@ with st.container():
   with left_column:
     st_lottie(lottie_coding,height=100,key="coding")
   with right_column:
-    st.title("Home Loan Calculator")
-st.write("---")    
+    st.title("Home Loan Calculator") 
 st.write("A tool that helps you estimate your monthly loan payments and the total interest you will pay over the life of the loan. ")
 st.sidebar.subheader("Input your loan details below:")
 
