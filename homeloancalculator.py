@@ -234,22 +234,22 @@ col1, col2, col3 = st.columns(3)
 # New Monthly Payment
 with col1:
     st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Monthly payment</p>
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">New Monthly payment</p>
         <span style="font-size: 20px; color: #000;">R{new_total_payment:.2f}</span>
     """, unsafe_allow_html=True)
   
 # Payment Difference
 with col2:
     st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Total interest paid</p>
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payment Difference</p>
         <span style="font-size: 20px; color: #000;">R{payment_difference:.2f}</span>
     """, unsafe_allow_html=True)
 
 # New Payoff date
 with col3:
     st.markdown(f"""
-        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payoff date</p>
-        <span style="font-size: 20px; color: #000;">{new_loan_term} years</span>
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Term Difference</p>
+        <span style="font-size: 20px; color: #000;">{abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}</span>
     """, unsafe_allow_html=True)
 
 # Close the summary box
@@ -285,7 +285,7 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
         
     if new_loan_term_difference != 0:
         st.write(
-            f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
+            #f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
             "Having a shorter loan term compared to the original loan is a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
         )
 
