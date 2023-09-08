@@ -225,7 +225,7 @@ original_monthly_payment = (
 
 # Create a container with curved border in grey
 st.markdown("""
-    <div style="border-radius: 10px; padding: 16px; background-color: #ECECEC;">
+    <div style="border-radius: 10px; padding: 16px; background-color: #ffffff;">
 """, unsafe_allow_html=True)
 
 # Header
