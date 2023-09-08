@@ -235,7 +235,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(f"""
         <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Monthly payment</p>
-        <span style="font-size: 20px; color: #000;">R{new_monthly_payment:.2f}</span>
+        <span style="font-size: 20px; color: #000;">R{new_total_payment:.2f}</span>
     """, unsafe_allow_html=True)
   
 # Payment Difference
