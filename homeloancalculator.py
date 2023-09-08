@@ -28,7 +28,7 @@ lottie_coding = load_lottieurl("https://lottie.host/7ae44262-17df-4ce9-a3d0-f0d7
 with st.container():
   left_column, right_column = st.columns(2)
   with left_column:
-    st_lottie(lottie_coding,height=300,key="coding")
+    st_lottie(lottie_coding,height=100,key="coding")
   with right_column:
     st.title("Home Loan Calculator")
 st.write("---")    
