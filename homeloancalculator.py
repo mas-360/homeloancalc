@@ -229,7 +229,7 @@ st.subheader("Impact of Changes")
 st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
 
 # Place the columns within the container
-col1, col2, col3 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 # New Monthly Payment
 with col1:
