@@ -223,6 +223,41 @@ original_monthly_payment = (
     * (1 + original_monthly_interest_rate) ** original_num_payments
 ) / ((1 + original_monthly_interest_rate) ** original_num_payments - 1)
 
+# Create a container with curved border in grey
+st.markdown("""
+    <div style="border-radius: 10px; padding: 16px; background-color: #ECECEC;">
+""", unsafe_allow_html=True)
+
+# Header
+st.markdown("""
+    <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px;">
+        <span style="font-size: 16px; font-weight: bold;">SUMMARY</span>
+    </div>
+""", unsafe_allow_html=True)
+
+# Display original and new payment details
+col1, col2 = st.columns(2)
+
+# Original payment details
+with col1:
+    st.subheader("Original Payment Details")
+    st.write(f"Original Monthly Payment: R{original_monthly_payment:.2f}")
+    st.write(f"Original Total Payment: R{monthly_payment:.2f}")
+    st.write(f"Original Loan Term: {loan_term} years")
+
+# New payment details
+with col2:
+    st.subheader("Updated Payment Details")
+    st.write(f"New Monthly Payment: R{new_monthly_payment:.2f}")
+    st.write(f"New Total Payment: R{new_total_payment:.2f}")
+    st.write(f"New Loan Term: {new_loan_term} years")
+
+# Display payment and loan term differences
+st.write(f"Payment Difference: R{payment_difference:.2f}")
+st.write(f"Loan Term Difference: {new_loan_term_difference} months")
+
+# Close the container
+st.markdown('</div>', unsafe_allow_html=True)
 st.subheader("Impact of Changes")
 #st.write(f"Monthly Payment: R{monthly_payment:,.2f}")
 #st.write(f"New Monthly Payment: R{new_monthly_payment:,.2f}")
@@ -240,7 +275,7 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
     if new_extra_payment > 0:
         explanations.append(
            
-            f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
+            #f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
             f"Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
             "When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
         )
