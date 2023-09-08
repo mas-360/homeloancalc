@@ -190,6 +190,9 @@ new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", val
 # Initialize new_total_payment with the original payment
 new_total_payment = monthly_payment
 
+# Initialize new_loan_term_difference with a default value
+new_loan_term_difference = 0
+
 # Create an empty container to hold the summary box
 summary_container = st.empty()
 
@@ -248,12 +251,15 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
     explanations = []
 
     if new_extra_payment > 0:
-        explanations.append( 
+        explanations.append(
+            f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
+            f"Payment Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
             "When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
         )
 
-    if new_loan_term_difference > 0:
+    if new_loan_term_difference != 0:
         explanations.append(
+            f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
             "Having a shorter loan term compared to the original loan is a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
         )
 
