@@ -17,6 +17,11 @@ st.set_page_config(page_title="Home Loan Calculator",
                    layout="wide"
 )
 
+# Design hide "made with streamlit" footer menu area
+hide_streamlit_footer = """<style>#MainMenu {visibility: hidden;}
+                        footer {visibility: hidden;}</style>"""
+st.markdown(hide_streamlit_footer, unsafe_allow_html=True)
+
 def load_lottieurl(url):
     r = requests.get(url)
     if r.status_code != 200:
@@ -182,7 +187,7 @@ def calculate_new_total_payment(
         return new_monthly_payment
 
 # Sidebar inputs
-st.sidebar.header('Change Variables')
+st.sidebar.subheader('Change Variables below:')
 new_interest_rate = st.sidebar.number_input("New Interest Rate (%)", value=interest_rate, step=0.1)
 new_loan_term = st.sidebar.number_input("New Loan Term (Years)", value=loan_term, step=1)
 new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", value=0, step=10)
@@ -196,10 +201,27 @@ new_loan_term_difference = 0
 # Create an empty container to hold the summary box
 summary_container = st.empty()
 
+# Function to calculate loan term based on changes
+def calculate_loan_term(loan_amount, interest_rate, monthly_payment, extra_payment=0):
+    monthly_interest_rate = interest_rate / 12 / 100
+    unpaid_balance = loan_amount
+    months_elapsed = 0
+
+    while unpaid_balance > 0:
+        interest_payment = unpaid_balance * monthly_interest_rate
+        principal_payment = monthly_payment - interest_payment - extra_payment
+        unpaid_balance -= principal_payment
+        months_elapsed += 1
+
+    return months_elapsed
+
+# Initialize new_total_payment with the original payment
+new_total_payment = monthly_payment
+
 # Calculate the impact of changes when the "Calculate" button is clicked
 if st.sidebar.button("Calculate"):
     new_monthly_interest_rate = new_interest_rate / 12 / 100
-    new_num_payments = new_loan_term * 12
+    new_num_payments = calculate_loan_term(loan_amount, new_interest_rate, new_total_payment, new_extra_payment)
 
     if new_extra_payment > 0:
         new_monthly_payment = (
@@ -209,13 +231,21 @@ if st.sidebar.button("Calculate"):
         ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
         new_total_payment = new_monthly_payment + new_extra_payment
 
+    if new_monthly_interest_rate != interest_rate / 12 / 100:
+        new_monthly_payment_with_interest_rate = (
+            loan_amount
+            * new_monthly_interest_rate
+            * (1 + new_monthly_interest_rate) ** new_num_payments
+        ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
+
     # Calculate the payment difference
     payment_difference = monthly_payment - new_total_payment
 
-    # Calculate the loan term difference
-    original_num_payments = loan_term * 12
+    # Calculate the loan term difference for changes in new_extra_payment
+    original_num_payments = calculate_loan_term(loan_amount, interest_rate, monthly_payment)
     new_loan_term_difference = new_num_payments - original_num_payments
 
+    
     # Create the summary box
     summary_container.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
 
@@ -245,22 +275,39 @@ if st.sidebar.button("Calculate"):
 
     # Close the summary box
     summary_container.markdown('</div>', unsafe_allow_html=True)
-st.header("Impact of Changes")
+    
+st.write("##")
+
 # Function to explain loan changes
+results_container = st.container()
 def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference):
     explanations = []
 
     if new_extra_payment > 0:
         explanations.append(
-            f"New Monthly Payment: R{new_monthly_payment:,.2f}.\n"  
-            f"Payment Difference: R{payment_difference:,.2f} {'savings' if payment_difference < 0 else 'additional cost'}.\n"  
-            "When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
+            "💡: When you make extra payments towards your loan principal, it has a positive effect on your loan. It reduces the outstanding balance faster, potentially shortening the loan term and saving you money on interest payments."
+        )
+    elif new_extra_payment < 0:
+        explanations.append(
+            "💡: When you reduce your extra payments compared to the original loan terms, you are paying less money upfront, which typically leads to a longer loan term or higher overall interest payments. This is favorable in the short term but may result in higher overall costs over the life of the loan."
         )
 
-    if new_loan_term_difference != 0:
+    if new_interest_rate < interest_rate:
         explanations.append(
-            f"Loan Term Difference: {abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}.\n"  
-            "Having a shorter loan term compared to the original loan is a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
+            "💡: When you secure a loan with a lower interest rate than the original loan, it has a positive impact. A lower interest rate means you'll pay less in interest over the life of the loan, resulting in lower overall costs."
+        )
+    elif new_interest_rate > interest_rate:
+        explanations.append(
+            "💡: When the interest rate on a loan increases compared to the original terms, it means you will pay more in interest over the life of the loan. This is unfavorable as it increases the cost of borrowing."
+        )
+
+    if new_loan_term_difference < 0:
+        explanations.append(
+            "💡: Having a shorter loan term compared to the original loan is a positive factor. A shorter term typically means higher monthly payments, but it can save you a significant amount of money in interest over the life of the loan. It also allows you to pay off the loan more quickly, reducing financial stress and risk."
+        )
+    elif new_loan_term_difference > 0:
+        explanations.append(
+            "💡: When borrowers choose to extend the loan term beyond the original terms, it typically results in lower monthly payments but may also lead to higher overall interest payments. Extending the loan term can make it more affordable in the short term but can increase the total cost of the loan over time."
         )
 
     if not explanations:
@@ -271,11 +318,15 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
 
     return "\n\n".join(explanations)
 
+# Display explanations
 explanation = explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference)
-st.write(explanation)
+with results_container:
+    st.subheader("Impact of Changes")
+    st.write(explanation)
+    
 st.markdown("---") 
 with st.expander(
     "**Disclaimer:**", expanded=True
 ):
     st.write(""" Please note that by default this calculator uses the prime interest rate for bond payment calculations. This is purely for convenience and not an indication of the interest rate that might be offered to you by a bank. This calculator is intended to provide estimates based on the indicated amounts and rates. Whilst we make every effort to ensure the accuracy of these calculations, we cannot be held liable for inaccuracies and do not accept liability for any damages arising from the use of this calculator.
-             """)   
+             """)  
