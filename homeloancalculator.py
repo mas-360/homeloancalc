@@ -174,7 +174,7 @@ def calculate_new_total_payment(
     loan_amount, new_interest_rate, new_loan_term, new_extra_payment
 ):
     new_monthly_interest_rate = new_interest_rate / 12 / 100
-    new_num_payments = loan_term * 12
+    new_num_payments = new_loan_term * 12
     new_monthly_payment = (
         loan_amount
         * new_monthly_interest_rate
