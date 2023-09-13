@@ -216,23 +216,6 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
     return pd.DataFrame(amortization_schedule)
 new_total_interest_paid = 0
 
-# Function to calculate loan term based on changes
-def calculate_loan_term(loan_amount, interest_rate, monthly_payment, new_extra_payment=0):
-    monthly_interest_rate = interest_rate / 12
-    unpaid_balance = loan_amount
-    months_elapsed = 0
-
-    # Add a safeguard to limit the number of iterations
-    max_iterations = 1000  # You can adjust this value as needed
-
-    while unpaid_balance > 0 and months_elapsed < max_iterations:
-        interest_payment = unpaid_balance * monthly_interest_rate
-        principal_payment = monthly_payment - interest_payment - new_extra_payment
-        unpaid_balance -= principal_payment
-        months_elapsed += 1
-
-    return months_elapsed
-    
 
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
@@ -315,11 +298,6 @@ def update_summary_box():
     # Calculate new total interest paid
     new_amortization_df = generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_interest_paid = new_amortization_df['Interest Payment'].sum()
-    
-    # Calculate loan term difference based on changes
-    new_loan_term_months = calculate_loan_term(loan_amount, new_interest_rate, new_total_payment, new_extra_payment)
-    original_loan_term_months = calculate_loan_term(loan_amount, interest_rate, monthly_payment, new_extra_payment)
-    new_loan_term_difference = new_loan_term_months - original_loan_term_months
 
     # Update session_state variables
     st.session_state.new_interest_rate = new_interest_rate
@@ -328,15 +306,12 @@ def update_summary_box():
 
     return new_total_payment, new_loan_term_difference, new_total_interest_paid
     
-
-
 # Trigger the update when the user presses a button
 update_button = st.sidebar.button("Update")
 
 # Update summary box and get results
 if update_button:
     new_total_payment, new_loan_term_difference, new_total_interest_paid = update_summary_box()
-
 
 # Create the summary box
 st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
