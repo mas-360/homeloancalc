@@ -265,9 +265,9 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
     return "\n\n".join(explanations)
 
 def update_summary_box():
-    #new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", value=st.session_state.new_interest_rate, step=0.1)
-    #new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", value=st.session_state.new_loan_term, step=1)
-    #new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", value=st.session_state.new_extra_payment, step=10)
+    new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", value=st.session_state.new_interest_rate, step=0.1)
+    new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", value=st.session_state.new_loan_term, step=1)
+    new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", value=st.session_state.new_extra_payment, step=10)
 
     # Calculate the new monthly payment
     new_total_payment, payment_difference, new_loan_term_difference = calculate_loan_changes(
