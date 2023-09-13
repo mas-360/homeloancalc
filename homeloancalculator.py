@@ -237,7 +237,7 @@ def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment,
     payment_difference = monthly_payment - new_total_payment
 
     # Calculate the loan term difference
-    new_loan_term_difference = new_loan_term - loan_term
+    #new_loan_term_difference = new_loan_term - loan_term
 
     return {
         'original_monthly_payment': monthly_payment,
@@ -296,16 +296,16 @@ def update_summary_box():
     results = calculate_loan_changes(loan_amount, interest_rate, loan_term, new_extra_payment, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_payment = results['new_total_payment']
     #payment_difference = results['payment_difference']
-    new_loan_term_difference = results['new_loan_term_difference']
+    #new_loan_term_difference = results['new_loan_term_difference']
 
     # Calculate new total interest paid
     new_amortization_df = generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_interest_paid = new_amortization_df['Interest Payment'].sum()
     
     # Calculate loan term difference based on changes
-    #new_loan_term_months = calculate_loan_term(loan_amount, new_interest_rate, new_total_payment, new_extra_payment)
-   # original_loan_term_months = calculate_loan_term(loan_amount, interest_rate, monthly_payment, new_extra_payment)
-    #new_loan_term_difference = new_loan_term_months - original_loan_term_months
+    old_loan_term_in_years = (loan_amount * (1 + monthly_interest_rate)**(num_payments) - loan_amount - extra_payment) / monthly_payment
+    new_loan_term_in_years = (loan_amount * (1 + new_interest_rate)**(num_payments) - loan_amount - new_extra_payment) / new_total_payment
+    new_loan_term_difference = new_loan_term_in_years - old_loan_term_in_years
 
     # Update session_state variables
     st.session_state.new_interest_rate = new_interest_rate
