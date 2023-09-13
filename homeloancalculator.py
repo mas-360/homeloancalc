@@ -9,18 +9,19 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from streamlit_lottie import st_lottie
 import calendar
+from streamlit_lottie import st_lottie
 
 st.set_page_config(page_title="Home Loan Calculator",
                    page_icon=":house:",
-                   layout="wide"
+                   layout="centered"
 )
 
 # Design hide "made with streamlit" footer menu area
 hide_streamlit_footer = """<style>#MainMenu {visibility: hidden;}
                         footer {visibility: hidden;}</style>"""
 st.markdown(hide_streamlit_footer, unsafe_allow_html=True)
+
 
 def load_lottieurl(url):
     r = requests.get(url)
@@ -30,12 +31,12 @@ def load_lottieurl(url):
 
 lottie_coding = load_lottieurl("https://lottie.host/7ae44262-17df-4ce9-a3d0-f0d7b7941dee/GkrOD8l8vl.json")
 
-with st.container():
-  left_column, right_column = st.columns((1,0.5))
-  with left_column:
-    st.title("Home Loan Calculator")
-  with right_column:
-    st_lottie(lottie_coding,height=100,key="coding")
+
+left_column, right_column = st.columns((1,0.5))
+with left_column:
+  st.header("Home Loan Calculator")
+with right_column:
+  st_lottie(lottie_coding, height=100, key="coding")
 st.write("A tool that helps you estimate your monthly loan payments and the total interest you will pay over the life of the loan. ")
 st.sidebar.subheader("Input your loan details below:")
 
@@ -80,7 +81,6 @@ amortization_df = pd.DataFrame(amortization_schedule, columns=['Month', 'Monthly
 last_month = amortization_df.iloc[-1]['Month']
 payoff_date = pd.to_datetime(f"{selected_start_year}-{selected_start_month}-01") + pd.DateOffset(months=last_month)
 
-
 st.subheader("Loan Summary:")
 # Create a summary box
 st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
@@ -119,7 +119,6 @@ with col4:
 
 # Close the summary box
 st.markdown('</div>', unsafe_allow_html=True)
-
 
 # Create an empty DataFrame with column names
 amortization_df = pd.DataFrame(columns=["Month", "Payment", "Principal", "Interest", "Balance"])
@@ -168,42 +167,36 @@ if st.checkbox("Show Amortization Table"):
     st.dataframe(amortization_df, hide_index=True, use_container_width=True)
 st.markdown("---")
 
-
-# Create a function to calculate the new total payment
-def calculate_new_total_payment(
-    loan_amount, new_interest_rate, new_loan_term, new_extra_payment
-):
-    new_monthly_interest_rate = new_interest_rate / 12 / 100
-    new_num_payments = new_loan_term * 12
-    new_monthly_payment = (
-        loan_amount
-        * new_monthly_interest_rate
-        * (1 + new_monthly_interest_rate) ** new_num_payments
-    ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
-    
-    if new_extra_payment > 0:
-        return new_monthly_payment + new_extra_payment
-    else:
-        return new_monthly_payment
-
-# Sidebar inputs
-st.sidebar.subheader('Change Variables below:')
-new_interest_rate = st.sidebar.number_input("New Interest Rate (%)", value=interest_rate, step=0.1)
-new_loan_term = st.sidebar.number_input("New Loan Term (Years)", value=loan_term, step=1)
-new_extra_payment = st.sidebar.number_input("New Extra Monthly Payment (R)", value=0, step=10)
-
 # Initialize new_total_payment with the original payment
 new_total_payment = monthly_payment
-
 # Initialize new_loan_term_difference with a default value
 new_loan_term_difference = 0
+payment_difference = 0
+new_interest_rate = interest_rate
+new_loan_term = loan_term
+new_extra_payment = 0
 
-# Create an empty container to hold the summary box
-summary_container = st.empty()
+st.sidebar.subheader("Change Variables below:")
+new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", value=interest_rate, step=0.1)
+new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", value=loan_term, step=1)
+new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", value=0, step=10)
 
+# Initialize session_state variables
+#if 'new_interest_rate' not in st.session_state:
+    #st.session_state.new_interest_rate = interest_rate
+#if 'new_loan_term' not in st.session_state:
+    #st.session_state.new_loan_term = loan_term
+#if 'new_extra_payment' not in st.session_state:
+    #st.session_state.new_extra_payment = 0
+
+# Initialize session_state variables
+st.session_state.new_interest_rate = st.session_state.get("new_interest_rate", interest_rate)
+st.session_state.new_loan_term = st.session_state.get("new_loan_term", loan_term)
+st.session_state.new_extra_payment = st.session_state.get("new_extra_payment", 0)
+    
 # Function to calculate loan term based on changes
 def calculate_loan_term(loan_amount, interest_rate, monthly_payment, extra_payment=0):
-    monthly_interest_rate = interest_rate / 12 / 100
+    monthly_interest_rate = interest_rate / 12
     unpaid_balance = loan_amount
     months_elapsed = 0
 
@@ -214,72 +207,111 @@ def calculate_loan_term(loan_amount, interest_rate, monthly_payment, extra_payme
         months_elapsed += 1
 
     return months_elapsed
+  
 
-# Initialize new_total_payment with the original payment
-new_total_payment = monthly_payment
+# Function to calculate loan changes
+def calculate_loan_changes(
+    loan_amount, interest_rate, loan_term, extra_payment,
+    new_interest_rate, new_loan_term, new_extra_payment
+):
+    # Original calculations
+    monthly_interest_rate = interest_rate / 12 / 100
+    num_payments = loan_term * 12
+    monthly_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments) / ((1 + monthly_interest_rate) ** num_payments - 1)
 
-# Calculate the impact of changes when the "Calculate" button is clicked
-if st.sidebar.button("Calculate"):
+    # New calculations
     new_monthly_interest_rate = new_interest_rate / 12 / 100
-    new_num_payments = calculate_loan_term(loan_amount, new_interest_rate, new_total_payment, new_extra_payment)
-
-    if new_extra_payment > 0:
-        new_monthly_payment = (
-            loan_amount
-            * new_monthly_interest_rate
-            * (1 + new_monthly_interest_rate) ** new_num_payments
-        ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
-        new_total_payment = new_monthly_payment + new_extra_payment
-
-    if new_monthly_interest_rate != interest_rate / 12 / 100:
-        new_monthly_payment_with_interest_rate = (
-            loan_amount
-            * new_monthly_interest_rate
-            * (1 + new_monthly_interest_rate) ** new_num_payments
-        ) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1)
-
+    new_num_payments = loan_term * 12
+    if new_loan_term < loan_term:
+        new_num_payments = new_loan_term * 12
+    new_total_payment = (loan_amount * (new_monthly_interest_rate * (1 + new_monthly_interest_rate) ** new_num_payments) / ((1 + new_monthly_interest_rate) ** new_num_payments - 1) + new_extra_payment)
+    
     # Calculate the payment difference
     payment_difference = monthly_payment - new_total_payment
 
-    # Calculate the loan term difference for changes in new_extra_payment
-    original_num_payments = calculate_loan_term(loan_amount, interest_rate, monthly_payment)
-    new_loan_term_difference = new_num_payments - original_num_payments
+    # Calculate the loan term difference
+    new_loan_term_difference = new_loan_term - loan_term
 
-    
-    # Create the summary box
-    summary_container.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
+    return {
+        'original_monthly_payment': monthly_payment,
+        'new_total_payment': new_total_payment,
+        'payment_difference': payment_difference,
+        'new_loan_term_difference': new_loan_term_difference,
+    }
 
-    # Place the columns within the container
-    col1, col2, col3 = st.columns(3)
+# Function to update session_state variables and the summary box
+def update_summary_box():
+    new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", key="new_interest_rate", value=st.session_state.interest_rate, step=0.1)
+    new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", key="new_loan_term", value=st.session_state.new_loan_term, step=1)
+    new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", key="new_extra_payment", value=st.session_state.new_extra_payment, step=10)
 
-    # New Monthly Payment
-    with col1:
-        st.markdown(f"""
-            <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">New Monthly payment</p>
-            <span style="font-size: 20px; color: #000;">R{new_total_payment:.2f}</span>
-        """, unsafe_allow_html=True)
-      
-    # Payment Difference
-    with col2:
-        st.markdown(f"""
-            <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payment Difference</p>
-            <span style="font-size: 20px; color: #000;">R{payment_difference:.2f}</span>
-        """, unsafe_allow_html=True)
+    # Calculate the new monthly payment
+    new_total_payment = calculate_loan_changes(
+        loan_amount, interest_rate, loan_term, new_extra_payment_input,
+        new_interest_rate_input, new_loan_term_input, new_extra_payment_input
+    )['new_total_payment']
 
-    # New Payoff date
-    with col3:
-        st.markdown(f"""
-            <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Term Difference</p>
-            <span style="font-size: 20px; color: #000;">{abs(new_loan_term_difference) / 12} years {'shorter' if new_loan_term_difference < 0 else 'longer'}</span>
-        """, unsafe_allow_html=True)
+    # Calculate the payment difference
+    payment_difference = new_total_payment - monthly_payment
 
-    # Close the summary box
-    summary_container.markdown('</div>', unsafe_allow_html=True)
-    
+    # Calculate the new loan term difference
+    new_loan_term_difference = calculate_loan_term(
+        loan_amount, new_interest_rate_input, new_total_payment, new_extra_payment_input
+    ) - calculate_loan_term(loan_amount, interest_rate, monthly_payment, new_extra_payment_input)
+
+    st.session_state.new_interest_rate = new_interest_rate_input
+    st.session_state.new_loan_term = new_loan_term_input
+    st.session_state.new_extra_payment = new_extra_payment_input
+
+    return new_total_payment, payment_difference, new_loan_term_difference
+
+# Trigger the update when the user presses a button
+update_button = st.sidebar.button("Update")
+
+# Update summary box and get results
+if update_button:
+    new_total_payment, payment_difference, new_loan_term_difference = update_summary_box()
+
+# Create the summary box
+st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
+
+# Place the columns within the container
+col1, col2, col3, col4 = st.columns(4)
+
+# Loan Amount
+with col1:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Amount</p>
+        <span style="font-size: 20px; color: #000;">R{loan_amount:,.2f}</span>
+    """, unsafe_allow_html=True)
+
+# New Monthly Payment
+with col2:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">New Monthly payment</p>
+        <span style="font-size: 20px; color: #000;">R{new_total_payment:.2f}</span>
+    """, unsafe_allow_html=True)
+  
+# New Total interest paid
+with col3:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Payment Difference</p>
+        <span style="font-size: 20px; color: #000;">R{payment_difference:.2f}</span>
+    """, unsafe_allow_html=True)
+
+# Loan Term Difference
+with col3:
+    st.markdown(f"""
+        <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Term Difference</p>
+        <span style="font-size: 20px; color: #000;">{abs(new_loan_term_difference / 12):.1f} years {'shorter' if new_loan_term_difference < 0 else 'longer'}</span>
+    """, unsafe_allow_html=True)
+
+# Close the summary box
+st.markdown('</div>', unsafe_allow_html=True)
+
 st.write("##")
 
 # Function to explain loan changes
-results_container = st.container()
 def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference):
     explanations = []
 
@@ -319,14 +351,13 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
     return "\n\n".join(explanations)
 
 # Display explanations
-explanation = explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_difference)
-with results_container:
-    st.subheader("Impact of Changes")
-    st.write(explanation)
-    
+explanation = explain_loan_changes(new_extra_payment_input, new_interest_rate_input, new_loan_term_difference)
+st.subheader("Impact of Changes")
+st.write(explanation)
+
 st.markdown("---") 
 with st.expander(
     "**Disclaimer:**", expanded=True
 ):
     st.write(""" Please note that by default this calculator uses the prime interest rate for bond payment calculations. This is purely for convenience and not an indication of the interest rate that might be offered to you by a bank. This calculator is intended to provide estimates based on the indicated amounts and rates. Whilst we make every effort to ensure the accuracy of these calculations, we cannot be held liable for inaccuracies and do not accept liability for any damages arising from the use of this calculator.
-             """)  
+             """)
