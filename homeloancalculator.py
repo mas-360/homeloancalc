@@ -175,6 +175,14 @@ payment_difference = 0
 new_interest_rate = interest_rate
 new_loan_term = loan_term
 new_extra_payment = 0
+interest_rate = 11.75
+loan_term = 30
+
+# Display the input widgets in the sidebar
+st.sidebar.subheader("Change Variables below:")
+new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", value=new_interest_rate_input, step=0.1)
+new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", value=new_loan_term_input, step=1)
+new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", value=0, step=10)
 
 # Initialize session_state variables
 st.session_state.new_interest_rate = st.session_state.get("new_interest_rate", interest_rate)
@@ -264,11 +272,6 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
 
     return "\n\n".join(explanations)
   
-# Display the input widgets in the sidebar
-st.sidebar.subheader("Change Variables below:")
-new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", value=st.session_state.new_interest_rate, step=0.1, key="new_interest_rate")
-new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", value=st.session_state.new_loan_term, step=1, key="new_loan_term")
-new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", value=st.session_state.new_extra_payment, step=10, key="new_extra_payment")
 
 # Initialize a boolean flag to control the display of the summary box
 show_summary_box = False
