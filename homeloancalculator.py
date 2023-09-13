@@ -303,7 +303,7 @@ def update_summary_box():
     new_total_interest_paid = new_amortization_df['Interest Payment'].sum()
     
     # Calculate loan term difference based on changes
-    old_loan_term_in_years = (loan_amount * (1 + monthly_interest_rate)**(num_payments) - loan_amount - extra_payment) / monthly_payment
+    old_loan_term_in_years = (loan_amount * (1 + monthly_interest_rate)**(num_payments) - loan_amount) / monthly_payment
     new_loan_term_in_years = (loan_amount * (1 + new_interest_rate)**(num_payments) - loan_amount - new_extra_payment) / new_total_payment
     new_loan_term_difference = new_loan_term_in_years - old_loan_term_in_years
 
