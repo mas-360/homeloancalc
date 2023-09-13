@@ -202,8 +202,8 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
     remaining_balance = loan_amount
 
     for month in range(1, num_payments + 1):
-        interest_payment = remaining_balance * monthly_interest_rate - extra_payment  # Subtract extra_payment from interest_payment
-        principal_payment = monthly_payment - interest_payment
+        interest_payment = remaining_balance * monthly_interest_rate
+        principal_payment = monthly_payment - interest_payment - extra_payment
         remaining_balance -= principal_payment
 
         amortization_schedule.append({
@@ -214,8 +214,11 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
         })
 
     return pd.DataFrame(amortization_schedule)
+
+
 new_total_interest_paid = 0
 
+    
 
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
@@ -293,11 +296,16 @@ def update_summary_box():
     results = calculate_loan_changes(loan_amount, interest_rate, loan_term, new_extra_payment, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_payment = results['new_total_payment']
     #payment_difference = results['payment_difference']
-    #new_loan_term_difference = results['new_loan_term_difference']
+    new_loan_term_difference = results['new_loan_term_difference']
 
     # Calculate new total interest paid
     new_amortization_df = generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_interest_paid = new_amortization_df['Interest Payment'].sum()
+    
+    # Calculate loan term difference based on changes
+    #new_loan_term_months = calculate_loan_term(loan_amount, new_interest_rate, new_total_payment, new_extra_payment)
+   # original_loan_term_months = calculate_loan_term(loan_amount, interest_rate, monthly_payment, new_extra_payment)
+    #new_loan_term_difference = new_loan_term_months - original_loan_term_months
 
     # Update session_state variables
     st.session_state.new_interest_rate = new_interest_rate
@@ -306,12 +314,15 @@ def update_summary_box():
 
     return new_total_payment, new_loan_term_difference, new_total_interest_paid
     
+
+
 # Trigger the update when the user presses a button
 update_button = st.sidebar.button("Update")
 
 # Update summary box and get results
 if update_button:
     new_total_payment, new_loan_term_difference, new_total_interest_paid = update_summary_box()
+
 
 # Create the summary box
 st.markdown('<div class="summary-box-container pos-sticky box-shadow-1 bg-white rounded-md p-6 mx-4">', unsafe_allow_html=True)
@@ -362,4 +373,5 @@ with st.expander(
 ):
     st.write(""" Please note that by default this calculator uses the prime interest rate for bond payment calculations. This is purely for convenience and not an indication of the interest rate that might be offered to you by a bank. This calculator is intended to provide estimates based on the indicated amounts and rates. Whilst we make every effort to ensure the accuracy of these calculations, we cannot be held liable for inaccuracies and do not accept liability for any damages arising from the use of this calculator.
              """)
+    
     
