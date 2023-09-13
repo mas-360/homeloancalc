@@ -290,9 +290,9 @@ def update_summary_box():
 
 # Trigger the update when the user presses a button
 st.sidebar.subheader("Change Variables below:")
-new_interest_rate_st = st.sidebar.number_input("New Interest Rate (%)", value=st.session_state.new_interest_rate, step=0.1)
-new_loan_term_st = st.sidebar.number_input("New Loan Term (Years)", value=st.session_state.new_loan_term, step=1)
-new_extra_payment_st = st.sidebar.number_input("New Extra Monthly Payment (R)", value=st.session_state.new_extra_payment, step=10)
+#new_interest_rate_st = st.sidebar.number_input("New Interest Rate (%)", value=st.session_state.new_interest_rate, step=0.1)
+#new_loan_term_st = st.sidebar.number_input("New Loan Term (Years)", value=st.session_state.new_loan_term, step=1)
+#new_extra_payment_st = st.sidebar.number_input("New Extra Monthly Payment (R)", value=st.session_state.new_extra_payment, step=10)
 update_button = st.sidebar.button("Update")
 
 # Update summary box and get results
