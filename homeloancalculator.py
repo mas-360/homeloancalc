@@ -202,8 +202,8 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
     remaining_balance = loan_amount
 
     for month in range(1, num_payments + 1):
-        interest_payment = remaining_balance * monthly_interest_rate
-        principal_payment = monthly_payment - interest_payment - extra_payment
+        interest_payment = remaining_balance * monthly_interest_rate - extra_payment  # Subtract extra_payment from interest_payment
+        principal_payment = monthly_payment - interest_payment
         remaining_balance -= principal_payment
 
         amortization_schedule.append({
@@ -214,8 +214,6 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
         })
 
     return pd.DataFrame(amortization_schedule)
-
-
 new_total_interest_paid = 0
 
 # Function to calculate loan term based on changes
