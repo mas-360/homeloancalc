@@ -241,7 +241,7 @@ def calculate_loan_changes(
 
 # Function to update session_state variables and the summary box
 def update_summary_box():
-    new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", key="new_interest_rate", value=st.session_state.interest_rate, step=0.1)
+    new_interest_rate_input = st.sidebar.number_input("New Interest Rate (%)", key="new_interest_rate", value=st.session_state.new_interest_rate, step=0.1)
     new_loan_term_input = st.sidebar.number_input("New Loan Term (Years)", key="new_loan_term", value=st.session_state.new_loan_term, step=1)
     new_extra_payment_input = st.sidebar.number_input("New Extra Monthly Payment (R)", key="new_extra_payment", value=st.session_state.new_extra_payment, step=10)
 
