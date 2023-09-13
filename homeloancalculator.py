@@ -93,7 +93,7 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.markdown(f"""
         <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Amount</p>
-        <span style="font-size: 20px; color: #000;">R{loan_amount:,.0f}</span>
+        <span style="font-size: 20px; color: #000;">R{loan_amount:,.2f}</span>
     """, unsafe_allow_html=True)
   
 # Total interest paid
@@ -192,9 +192,9 @@ st.session_state.new_loan_term = st.session_state.get("new_loan_term", loan_term
 st.session_state.new_extra_payment = st.session_state.get("new_extra_payment", 0)
 
 
-def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_payment=0):
-    monthly_interest_rate = interest_rate / 12 / 100
-    num_payments = loan_term * 12
+def generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment):
+    monthly_interest_rate = new_interest_rate / 12 / 100
+    num_payments = new_loan_term * 12
     monthly_payment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** num_payments) / ((1 + monthly_interest_rate) ** num_payments - 1)
 
     amortization_schedule = []
@@ -202,8 +202,8 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
     remaining_balance = loan_amount
 
     for month in range(1, num_payments + 1):
-        interest_payment = remaining_balance * monthly_interest_rate
-        principal_payment = monthly_payment - interest_payment - extra_payment
+        interest_payment = remaining_balance * monthly_interest_rate - new_extra_payment
+        principal_payment = monthly_payment - interest_payment
         remaining_balance -= principal_payment
 
         amortization_schedule.append({
@@ -218,7 +218,26 @@ def generate_amortization_schedule(loan_amount, interest_rate, loan_term, extra_
 
 new_total_interest_paid = 0
 
-    
+def calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_term, new_extra_payment):
+    # Calculate the monthly interest rate
+    monthly_interest_rate = new_interest_rate / 12 / 100
+
+    # Calculate the number of payments
+    num_payments = loan_term * 12
+
+    # Calculate the remaining balance after making extra payments
+    remaining_balance = loan_amount
+    for month in range(1, num_payments + 1):
+        interest_payment = remaining_balance * monthly_interest_rate
+        principal_payment = monthly_payment - interest_payment - new_extra_payment
+        remaining_balance -= principal_payment
+        if remaining_balance <= 0:
+            # The loan is paid off, calculate the loan term difference in years
+            loan_term_in_years = month / 12
+            return loan_term_in_years
+
+    # If the loop completes without fully paying off the loan, return the original loan term
+    return loan_term
 
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
@@ -243,7 +262,7 @@ def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment,
         'original_monthly_payment': monthly_payment,
         'new_total_payment': new_total_payment,
         'payment_difference': payment_difference,
-        'new_loan_term_difference': new_loan_term_difference,
+        #'new_loan_term_difference': new_loan_term_difference,
     }
 
 # Function to explain loan changes
@@ -295,17 +314,14 @@ def update_summary_box():
     # Calculate the new monthly payment and other values
     results = calculate_loan_changes(loan_amount, interest_rate, loan_term, new_extra_payment, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_payment = results['new_total_payment']
-    #payment_difference = results['payment_difference']
-    #new_loan_term_difference = results['new_loan_term_difference']
-
+    
     # Calculate new total interest paid
     new_amortization_df = generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_interest_paid = new_amortization_df['Interest Payment'].sum()
     
     # Calculate loan term difference based on changes
-    old_loan_term_in_years = (loan_amount * (1 + monthly_interest_rate)**(num_payments) - loan_amount) / monthly_payment
-    new_loan_term_in_years = (loan_amount * (1 + new_interest_rate)**(num_payments) - loan_amount - new_extra_payment) / new_total_payment
-    new_loan_term_difference = new_loan_term_in_years - old_loan_term_in_years
+    new_loan_term_in_years = calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_term, new_extra_payment)
+    new_loan_term_difference = loan_term - new_loan_term_in_years                                                                   
 
     # Update session_state variables
     st.session_state.new_interest_rate = new_interest_rate
@@ -313,9 +329,8 @@ def update_summary_box():
     st.session_state.new_extra_payment = new_extra_payment
 
     return new_total_payment, new_loan_term_difference, new_total_interest_paid
+
     
-
-
 # Trigger the update when the user presses a button
 update_button = st.sidebar.button("Update")
 
@@ -334,7 +349,7 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.markdown(f"""
         <p style="font-weight: lighter; color: #888; margin-bottom: 8px;">Loan Amount</p>
-        <span style="font-size: 20px; color: #000;">R{loan_amount:,.0f}</span>
+        <span style="font-size: 20px; color: #000;">R{loan_amount:,.2f}</span>
     """, unsafe_allow_html=True)
 
 # New Total Interest Paid
@@ -373,5 +388,4 @@ with st.expander(
 ):
     st.write(""" Please note that by default this calculator uses the prime interest rate for bond payment calculations. This is purely for convenience and not an indication of the interest rate that might be offered to you by a bank. This calculator is intended to provide estimates based on the indicated amounts and rates. Whilst we make every effort to ensure the accuracy of these calculations, we cannot be held liable for inaccuracies and do not accept liability for any damages arising from the use of this calculator.
              """)
-    
     
