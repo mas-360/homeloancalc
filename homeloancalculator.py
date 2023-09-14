@@ -175,8 +175,8 @@ payment_difference = 0
 new_interest_rate = interest_rate
 new_loan_term = loan_term
 new_extra_payment = 0
-interest_rate = 11.75
-loan_term = 30
+#interest_rate = 11.75
+#loan_term = 30
 new_interest_rate_input = interest_rate
 new_loan_term_input = loan_term
 
