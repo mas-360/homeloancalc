@@ -232,7 +232,7 @@ def calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_te
     months_elapsed = 0
 
     # Add a safeguard to limit the number of iterations
-    max_iterations = 1000  # You can adjust this value as needed
+    max_iterations = 5000  # You can adjust this value as needed
 
     # Calculate the estimated loan term in months
     while remaining_balance > 0 and months_elapsed < max_iterations:
@@ -244,7 +244,7 @@ def calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_te
     # Convert the number of months to years
     estimated_loan_term_in_years = months_elapsed / 12
 
-    return estimated_loan_term_in_years
+    return {'estimated_loan_term_in_years': new_loan_term_difference}
 
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
