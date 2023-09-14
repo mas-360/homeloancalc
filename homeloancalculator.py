@@ -246,6 +246,7 @@ def calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_te
 
     return estimated_loan_term_in_years
 
+
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
     monthly_interest_rate = interest_rate / 12 / 100
