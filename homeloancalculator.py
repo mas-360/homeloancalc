@@ -244,7 +244,7 @@ def calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_te
     # Convert the number of months to years
     estimated_loan_term_in_years = months_elapsed / 12
 
-    return {'estimated_loan_term_in_years': new_loan_term_difference}
+    return estimated_loan_term_in_years
 
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
@@ -263,13 +263,13 @@ def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment,
     payment_difference = monthly_payment - new_total_payment
 
     # Calculate the loan term difference
-    #new_loan_term_difference = new_loan_term - loan_term
+    new_loan_term_difference = new_loan_term - loan_term
 
     return {
         'original_monthly_payment': monthly_payment,
         'new_total_payment': new_total_payment,
         'payment_difference': payment_difference,
-        #'new_loan_term_difference': new_loan_term_difference,
+        'new_loan_term_difference': new_loan_term_difference,
     }
 
 # Function to explain loan changes
