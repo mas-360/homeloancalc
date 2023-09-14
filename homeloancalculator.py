@@ -311,17 +311,18 @@ def update_summary_box():
     new_loan_term = new_loan_term_input
     new_extra_payment = new_extra_payment_input
 
+    # Calculate loan term difference based on changes
+    new_loan_term_in_years = calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_term, new_extra_payment)
+    new_loan_term_difference = loan_term - new_loan_term_in_years                                                                   
+
+
     # Calculate the new monthly payment and other values
     results = calculate_loan_changes(loan_amount, interest_rate, loan_term, new_extra_payment, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_payment = results['new_total_payment']
     
     # Calculate new total interest paid
     new_amortization_df = generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment)
-    new_total_interest_paid = new_amortization_df['Interest Payment'].sum()
-    
-    # Calculate loan term difference based on changes
-    new_loan_term_in_years = calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_term, new_extra_payment)
-    new_loan_term_difference = loan_term - new_loan_term_in_years                                                                   
+    new_total_interest_paid = new_amortization_df['Interest Payment'].sum()                                                                  
 
     # Update session_state variables
     st.session_state.new_interest_rate = new_interest_rate
