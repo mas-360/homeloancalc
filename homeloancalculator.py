@@ -202,9 +202,9 @@ def generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term
     remaining_balance = loan_amount
 
     for month in range(1, num_payments + 1):
-        interest_payment = remaining_balance * monthly_interest_rate 
+        interest_payment = remaining_balance * monthly_interest_rate - new_extra_payment
         principal_payment = monthly_payment - interest_payment 
-        remaining_balance -= principal_payment - new_extra_payment
+        remaining_balance -= principal_payment 
 
         amortization_schedule.append({
             'Month': month,
