@@ -326,6 +326,7 @@ def update_summary_box():
     # Calculate the new monthly payment and other values
     results = calculate_loan_changes(loan_amount, interest_rate, loan_term, new_extra_payment, new_interest_rate, new_loan_term, new_extra_payment)
     new_total_payment = results['new_total_payment']
+    new_total_payment = results['new_loan_term_difference']
     
     # Calculate new total interest paid
     new_amortization_df = generate_amortization_schedule(loan_amount, new_interest_rate, new_loan_term, new_extra_payment)
