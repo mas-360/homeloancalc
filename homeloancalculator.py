@@ -225,19 +225,26 @@ def calculate_loan_term(loan_amount, monthly_payment, new_interest_rate, loan_te
     # Calculate the number of payments
     num_payments = loan_term * 12
 
-    # Calculate the remaining balance after making extra payments
+    # Initialize the remaining balance
     remaining_balance = loan_amount
-    for month in range(1, num_payments + 1):
+
+    # Initialize the number of months
+    months_elapsed = 0
+
+    # Add a safeguard to limit the number of iterations
+    max_iterations = 1000  # You can adjust this value as needed
+
+    # Calculate the estimated loan term in months
+    while remaining_balance > 0 and months_elapsed < max_iterations:
         interest_payment = remaining_balance * monthly_interest_rate
         principal_payment = monthly_payment - interest_payment - new_extra_payment
         remaining_balance -= principal_payment
-        if remaining_balance <= 0:
-            # The loan is paid off, calculate the loan term difference in years
-            loan_term_in_years = month / 12
-            return loan_term_in_years
+        months_elapsed += 1
 
-    # If the loop completes without fully paying off the loan, return the original loan term
-    return loan_term
+    # Convert the number of months to years
+    estimated_loan_term_in_years = months_elapsed / 12
+
+    return estimated_loan_term_in_years
 
 def calculate_loan_changes(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
     # Original calculations
@@ -302,7 +309,6 @@ def explain_loan_changes(new_extra_payment, new_interest_rate, new_loan_term_dif
             "The original loan terms remain unchanged."
         )
     return "\n\n".join(explanations)
-
 
 
 def update_summary_box():
