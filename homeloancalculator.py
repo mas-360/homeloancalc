@@ -41,9 +41,9 @@ st.write("A tool that helps you estimate your monthly loan payments and the tota
 st.sidebar.subheader("Input your loan details below:")
 
 # Input fields for loan details
-loan_amount = st.sidebar.number_input("Loan Amount (R)", value=100000, step=1000)
+loan_amount = st.sidebar.number_input("Loan Amount (R)", value=1000000, step=1000)
 interest_rate = st.sidebar.number_input("Interest Rate (%)", value=11.75, step=0.1)
-loan_term = st.sidebar.number_input("Loan Term (Years)", value=30, step=1)
+loan_term = st.sidebar.number_input("Loan Term (Years)", value=20, step=1)
 
 # Dropdown for selecting the start month
 start_month_options = [
