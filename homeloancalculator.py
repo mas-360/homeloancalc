@@ -31,7 +31,7 @@ def load_lottieurl(url):
         return None
     return r.json()
 
-lottie_coding = load_lottieurl("https://lottie.host/f842c5c8-d3ea-4c9d-aa08-174f52bf02bd/YWA8X59OLS.json")
+lottie_coding = load_lottieurl("https://lottie.host/2621fc26-afe5-4894-b2c1-58268abb6eee/wttpnYx4Ay.json")
 
 
 left_column, right_column = st.columns((1,0.5))
