@@ -4,5 +4,6 @@ pandas
 plotly
 requests
 streamlit_lottie
+streamlit_extras
 
 
