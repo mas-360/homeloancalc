@@ -18,7 +18,8 @@ from streamlit_extras.stylable_container import stylable_container
 st.set_page_config(
     page_title="Home Loan Calculator",
     page_icon=":house:",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="expanded",
 )
 
 # Hide "Made with Streamlit" footer menu
