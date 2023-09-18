@@ -38,9 +38,9 @@ lottie_coding = load_lottieurl("https://lottie.host/488138f0-954d-4e4f-a6ac-a584
 
 # Create page header
 left_column, right_column = st.columns((1, 1))
-with left_column:
-    st.header("Home Loan Calculator")
 with right_column:
+    st.header("Home Loan Calculator")
+with left_column:
     st_lottie(lottie_coding, height=100, key="coding")
 
 st.write("A tool to estimate your monthly loan payments and measure the impact of changes on your loan.")
