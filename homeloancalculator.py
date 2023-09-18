@@ -105,7 +105,7 @@ with stylable_container(
         f"""
         <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px;">
             <span style="font-size: 16px; font-weight: bold;">LOAN SUMMARY</span>
-            <p style="float: right; font-size: 14px; font-weight: lighter; color: #888;">{st.session_state.num_payments} payments</p>
+            
         </div>
         """, unsafe_allow_html=True
     )
