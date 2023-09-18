@@ -39,11 +39,13 @@ lottie_coding = load_lottieurl("https://lottie.host/488138f0-954d-4e4f-a6ac-a584
 # Create page header
 left_column, right_column = st.columns((1, 1))
 with right_column:
-    st.header("Home Loan Calculator")
+    pass
 with left_column:
     st_lottie(lottie_coding, height=100, key="coding")
 
 st.write("A tool to estimate your monthly loan payments and measure the impact of changes on your loan.")
+st.sidebar.header("Home Loan Calculator")
+st.write("##")
 st.sidebar.subheader("Input your loan details below:")
 
 # Input fields for loan details
@@ -189,8 +191,8 @@ selected_month = list(amortization_df["Month"])
 if st.checkbox("Show Amortization Table"):
     st.write(f"Below is the amortization schedule for a R{loan_amount:,} home loan, for {loan_term} years with a {interest_rate}% fixed rate: ")
     st.dataframe(amortization_df, hide_index=True, use_container_width=True)
-st.markdown("---")
-
+#st.markdown("---")
+st.write("##")
 # Initialize new_total_payment with the original payment
 new_total_payment = 0
 # Initialize new_loan_term_difference with a default value
