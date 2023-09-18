@@ -37,7 +37,7 @@ def load_lottieurl(url):
 lottie_coding = load_lottieurl("https://lottie.host/488138f0-954d-4e4f-a6ac-a5847226b2a3/IqZMv94lzs.json")
 
 # Create page header
-left_column, right_column = st.columns((1, 1))
+left_column, right_column = st.columns(2)
 with right_column:
     pass
 with left_column:
