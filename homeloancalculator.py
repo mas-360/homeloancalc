@@ -341,7 +341,7 @@ savings_or_cost = "cost" if results['payment_difference'] < cost else "savings"
 
 Updated_Loan_Term = (calculate_loan_term(loan_amount, results['new_total_payment'], interest_rate, loan_term, extra_payment)) 
 # Create the new monthly payment sentence
-new_payment_sentence = f"💡: Based on your loan changes, the new monthly payment is **R{results['new_total_payment']:,.2f}** with a {savings_or_cost} of **R{results['payment_difference']:,.2f}** and an updated loan term of **{Updated_Loan_Term:.1f} years**."
+new_payment_sentence = f"💡: Based on your loan changes, the new monthly payment is estimated at **R{results['new_total_payment']:,.2f}** with a {savings_or_cost} of **R{results['payment_difference']:,.2f}** and an updated loan term of **{Updated_Loan_Term:.1f} years**."
 
 # Write the sentence
 st.write(new_payment_sentence)
