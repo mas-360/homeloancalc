@@ -433,4 +433,4 @@ st.plotly_chart(line_chart, theme="streamlit")
 
 st.markdown("---")
 
-st.write("**Disclaimer:**This calculator provides rough estimates of loan payments. It assumes a fixed interest rate for the entire loan term and does not consider other factors like taxes, insurance, or variable interest rates. The results may not be accurate, and you should consult with a financial advisor or lender for precise loan information.")
+st.markdown("**Disclaimer:**This calculator provides rough estimates of loan payments. It assumes a fixed interest rate for the entire loan term and does not consider other factors like taxes, insurance, or variable interest rates. The results may not be accurate, and you should consult with a financial advisor or lender for precise loan information.")
