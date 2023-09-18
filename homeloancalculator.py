@@ -415,7 +415,7 @@ line_chart = px.line(
 
 # Update the layout of the chart
 line_chart.update_layout(
-    xaxis_title='Payment Number',
+    xaxis_title='Number of Payments',
     yaxis_title='Remaining Balance (R)',
     showlegend=True,
     legend_title_text='Balance Type',
