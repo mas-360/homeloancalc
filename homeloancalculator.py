@@ -98,14 +98,14 @@ with stylable_container(
 ):
     # Inside the `st.markdown` section, update it as follows:
     st.markdown(
-        # Header
-        f"""
-        <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px;">
-            <span style="font-size: 16px; font-weight: bold;">LOAN SUMMARY</span>
-            
-        </div>
-        """, unsafe_allow_html=True
-    )
+    # Header
+    f"""
+    <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px; width: 90%;">
+        <span style="font-size: 16px; font-weight: bold;">LOAN SUMMARY</span>
+    </div>
+    """, unsafe_allow_html=True
+)
+
 
     # Place the columns within the container
     col1, col2, col3, col4 = st.columns(4)
