@@ -43,7 +43,7 @@ with left_column:
 with right_column:
     st_lottie(lottie_coding, height=100, key="coding")
 
-st.write("A tool that helps you estimate your monthly loan payments and the total interest you will pay over the life of the loan.")
+st.write("A tool to estimate your monthly loan payments and measure the impact of changes on your loan.")
 st.sidebar.subheader("Input your loan details below:")
 
 # Input fields for loan details
@@ -95,7 +95,7 @@ with stylable_container(
         {
             border: 1px solid rgba(49, 51, 63, 0.2);
             border-radius: 0.5rem;
-            padding: calc(2em - 1px)
+            padding: calc(1em - 20px)
         }
         """,
 ):
@@ -105,7 +105,7 @@ with stylable_container(
         f"""
         <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px;">
             <span style="font-size: 16px; font-weight: bold;">LOAN SUMMARY</span>
-            <p style="float: right; font-size: 14px; font-weight: lighter; color: #888;">Num of payments: {st.session_state.num_payments}</p>
+            <p style="float: right; font-size: 14px; font-weight: lighter; color: #888;">{st.session_state.num_payments} payments</p>
         </div>
         """, unsafe_allow_html=True
     )
@@ -289,10 +289,11 @@ def calculate_loan_term(loan_amount, monthly_payment, interest_rate, loan_term, 
         remaining_balance -= principal_payment
         months_elapsed += 1
 
-    # Convert the number of months to years
-    estimated_loan_term_in_years = months_elapsed / 12
+    # Convert the number of months to years, but set a minimum of 1 year
+    estimated_loan_term_in_years = max(months_elapsed / 12, 1)
 
     return estimated_loan_term_in_years
+
 
 
 def calculate_loan_term_difference(loan_amount, interest_rate, loan_term, extra_payment, new_interest_rate, new_loan_term, new_extra_payment):
@@ -323,20 +324,36 @@ st.session_state.new_loan_term = new_loan_term_input
 st.session_state.new_extra_payment = new_extra_payment_input
 
 # Display loan changes
-st.subheader("Updated Loan Summary")
 
-st.write("💡: Original Monthly Payment: R{:,.2f}".format(results['original_monthly_payment']))
-st.write("💡: Updated Total Payment: R{:,.2f}".format(results['new_total_payment']))
-st.write("💡: Payment Difference: R{:,.2f}".format(results['payment_difference']))
+st.markdown(
+    # Header
+    f"""
+    <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px;">
+        <span style="font-size: 16px; font-weight: bold;">UPDATED LOAN SUMMARY</span>
+
+    </div>
+    """, unsafe_allow_html=True
+)
+
+# Determine whether it's a cost or savings
+cost = 0  # Define the threshold for considering it as a cost
+savings_or_cost = "cost" if results['payment_difference'] < cost else "savings"
+
+Updated_Loan_Term = (calculate_loan_term(loan_amount, results['new_total_payment'], interest_rate, loan_term, extra_payment)) 
+# Create the new monthly payment sentence
+new_payment_sentence = f"💡: Based on your loan changes, the new monthly payment is **R{results['new_total_payment']:,.2f}** with a {savings_or_cost} of **R{results['payment_difference']:,.2f}** and an updated loan term of **{Updated_Loan_Term:.1f} years**."
+
+# Write the sentence
+st.write(new_payment_sentence)
 
 # Display the estimated loan term difference
-st.write("💡: Updated Loan Term: {:.2f} years".format(calculate_loan_term(loan_amount, results['new_total_payment'], interest_rate, loan_term, extra_payment)))
+#st.write("💡: Updated Loan Term: {:.2f} years".format(calculate_loan_term(loan_amount, results['new_total_payment'], interest_rate, loan_term, extra_payment)))
 
 
 # Calculate new amortization schedule
 new_amortization_schedule_df = generate_amortization_schedule(loan_amount, new_interest_rate_input, new_loan_term_input, new_extra_payment_input)
 
-st.write("Visualize how your loan balance decreases over time with each payment.")
+#st.write("Visualize how your loan balance decreases over time with each payment.")
 
 new_monthly_interest_rate = new_interest_rate / 12 / 100
 
@@ -417,5 +434,5 @@ st.plotly_chart(line_chart, theme="streamlit")
 
 
 st.markdown("---")
-st.write("### Disclaimer")
+st.subheader("Disclaimer")
 st.write("This calculator provides rough estimates of loan payments. It assumes a fixed interest rate for the entire loan term and does not consider other factors like taxes, insurance, or variable interest rates. The results may not be accurate, and you should consult with a financial advisor or lender for precise loan information.")
