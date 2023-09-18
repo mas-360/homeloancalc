@@ -34,7 +34,7 @@ def load_lottieurl(url):
     return r.json()
 
 # Load Lottie animation
-lottie_coding = load_lottieurl("https://lottie.host/2621fc26-afe5-4894-b2c1-58268abb6eee/wttpnYx4Ay.json")
+lottie_coding = load_lottieurl("https://lottie.host/488138f0-954d-4e4f-a6ac-a5847226b2a3/IqZMv94lzs.json")
 
 # Create page header
 left_column, right_column = st.columns((1, 0.5))
