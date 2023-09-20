@@ -101,7 +101,7 @@ with stylable_container(
     st.markdown(
     # Header
     f"""
-    <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px; width: 97%;">
+    <div style="border-bottom: 1px solid #ccc; margin-bottom: 16px; width: 95%;">
         <span style="font-size: 16px; font-weight: bold;">LOAN SUMMARY</span>
     </div>
     """, unsafe_allow_html=True
