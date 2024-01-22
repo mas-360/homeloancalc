@@ -434,3 +434,30 @@ st.plotly_chart(line_chart, theme="streamlit")
 st.markdown("---")
 
 st.markdown("**Disclaimer:** This calculator provides rough estimates of loan payments. It assumes a fixed interest rate for the entire loan term and does not consider other factors like taxes, insurance, or variable interest rates. The results may not be accurate, and you should consult with a financial advisor or lender for precise loan information.")
+
+# Adding a footer
+footer = """
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;  # equally space the divs
+        }
+        .footer div {
+            flex: 1;  # each div will take up an equal amount of space
+            border: 1px solid #ccc;  # just to visualize the divs, can be removed
+            padding: 10px;
+        }
+    </style>
+    <div class="footer">
+        <div>© Made by <a href="https://masinsightdata.com/">masinsightdata</a> 2024. All rights reserved.</div>
+        <div><a href="https://forms.gle/fVuPJ5zyYWXhqHmu6"> Contact Us</a></div>
+    </div>
+"""
+st.markdown(footer, unsafe_allow_html=True)
