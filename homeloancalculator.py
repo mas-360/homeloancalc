@@ -456,8 +456,8 @@ footer = """
         }
     </style>
     <div class="footer">
-        <div>© Made by <a href="Anthea Sago.</div>
-        #<div><a href="https://forms.gle/fVuPJ5zyYWXhqHmu6"> Contact Us</a></div>
+        <div>© Made by Anthea Sago.</div>
+        
     </div>
 """
 st.markdown(footer, unsafe_allow_html=True)
